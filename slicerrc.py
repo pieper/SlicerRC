@@ -157,14 +157,14 @@ def setupMacros():
   print "SlicerRC - Install custom keyboard shortcuts"
   
   macros = (
-    ("Ctrl+0", loadSlicerRCFile),
-    ("Ctrl+1", multivolume),
-    ("Ctrl+2", endoscopy),
-    ("Ctrl+3", editor),
-    ("Ctrl+4", fileScan),
-    ("Ctrl+5", performance),
-    ("Ctrl+6", slicr_setup),
-    ("Ctrl+7", DICOM),
+    ("Shift+Ctrl+0", loadSlicerRCFile),
+    ("Shift+Ctrl+1", multivolume),
+    ("Shift+Ctrl+2", endoscopy),
+    ("Shift+Ctrl+3", editor),
+    ("Shift+Ctrl+4", fileScan),
+    ("Shift+Ctrl+5", performance),
+    ("Shift+Ctrl+6", slicr_setup),
+    ("Shift+Ctrl+7", DICOM),
     )
       
   for keys,f in macros:
