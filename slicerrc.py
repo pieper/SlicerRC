@@ -17,7 +17,7 @@ def load_default_volume():
 def multivolume():
   print "SlicerRC - multivolume setup..."
   import imp, sys, os
-  path = '%s/../../Slicer4/QTScriptedModules/Scripts' % slicer.app.slicerHome
+  path = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(path):
     sys.path.insert(0,path)
 
@@ -32,7 +32,7 @@ def multivolume():
 def endoscopy():
   print "SlicerRC - endoscopy setup..."
   import imp, sys, os
-  endoPath = '%s/../../Slicer4/QTScriptedModules/Scripts' % slicer.app.slicerHome
+  endoPath = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(endoPath):
     sys.path.insert(0,endoPath)
 
@@ -63,15 +63,18 @@ def editor():
     slicer.mrmlScene.SetURL('/home/pieper/data/edit/edit.mrml')
     slicer.mrmlScene.Connect()
 
-  editorLibPath = '%s/../../Slicer4/QTScriptedModules/EditorLib' % slicer.app.slicerHome
+  editorLibPath = '%s/../../Slicer4/Modules/Scripted/EditorLib' % slicer.app.slicerHome
   if not sys.path.__contains__(editorLibPath):
     sys.path.insert(0, editorLibPath)
-  editorPath = '%s/../../Slicer4/QTScriptedModules/Scripts' % slicer.app.slicerHome
+  editorPath = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(editorPath):
     sys.path.insert(0,editorPath)
 
 
-  modules = ("EditUtil", "EditColor", "EditOptions", "EditBox", "ColorBox", "HelperBox")
+  modules = (
+      "EditColor", "EditOptions", "EditBox", "ColorBox", "HelperBox",
+      "PaintEffect", 
+      )
   for mod in modules:
     sourceFile = editorLibPath + "/" + mod + ".py"
     fp = open(sourceFile, "r")
@@ -90,7 +93,7 @@ def editor():
 def fileScan():
   print "SlicerRC - fileScan setup..."
   import imp, sys, os
-  p = '%s/../../Slicer4/QTScriptedModules/Scripts' % slicer.app.slicerHome
+  p = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(p):
     sys.path.insert(0,p)
 
@@ -123,6 +126,7 @@ def slicr_setup():
   if not sys.path.__contains__(p):
     sys.path.insert(0,p)
 
+
   mod = "slicr"
   sourceFile = p + "/slicr.py"
   fp = open(sourceFile, "r")
@@ -135,9 +139,24 @@ def slicr_setup():
 def DICOM():
   print "SlicerRC - DICOM setup..."
   import imp, sys, os
-  path = '%s/../../Slicer4/QTScriptedModules/Scripts' % slicer.app.slicerHome
+  path = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(path):
     sys.path.insert(0,path)
+
+  if False:
+    # TODO: reload dicomlib
+    dicomLibPath = '%s/../../Slicer4/Modules/Scripted/DICOMLib' % slicer.app.slicerHome
+    if not sys.path.__contains__(dicomLibPath):
+      sys.path.insert(0, dicomLibPath)
+
+
+    modules = ("DICOMServers", "DICOMDataExchange", "DICOMWidgets")
+    for mod in modules:
+      sourceFile = dicomLibPath + "/" + mod + ".py"
+      fp = open(sourceFile, "r")
+      globals()[mod] = imp.load_module(mod, fp, sourceFile, ('.py', 'r', imp.PY_SOURCE))
+      fp.close()
+      exec("globals()['DICOMLib'].%s = globals()['%s'].%s" % (mod,mod,mod))
 
   mod = "DICOM"
   sourceFile = path + "/DICOM.py"
