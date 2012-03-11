@@ -182,12 +182,23 @@ def DICOM():
 
   globals()['DICOM'] = globals()[mod].DICOMWidget()
 
+def grabToClipboard(widget):
+  pixmap = qt.QPixmap.grabWidget(widget)
+  slicer.app.clipboard().setPixmap(pixmap)
+
+def grabMainToClipboard():
+  grabToClipboard(slicer.util.mainWindow())
+
+def grabPythonToClipboard():
+  grabToClipboard(slicer.util.pythonShell())
+
 
 def setupMacros():
   """Set up hot keys for various development scenarios"""
   
   import qt
-  global load_default_volume, multivolume, endoscopy, editor, fileScan, performance, slicr_setup, DICOM
+  global load_default_volume, multivolume, labelStatistics, editor, fileScan, performance, slicr_setup, DICOM
+  global grabPythonToClipboard, grabMainToClipboard, grabToClipboard
   
   print "SlicerRC - Install custom keyboard shortcuts"
   
@@ -195,20 +206,23 @@ def setupMacros():
     ("Shift+Ctrl+0", loadSlicerRCFile),
     ("Shift+Ctrl+1", multivolume),
     ("Shift+Ctrl+2", labelStatistics),
-    ("Shift+Ctrl+2", endoscopy),
     ("Shift+Ctrl+3", editor),
     ("Shift+Ctrl+4", fileScan),
     ("Shift+Ctrl+5", performance),
     ("Shift+Ctrl+6", slicr_setup),
     ("Shift+Ctrl+7", DICOM),
+    ("Shift+Ctrl+p", grabPythonToClipboard),
+    ("Shift+Ctrl+c", grabMainToClipboard),
     )
       
-  for keys,f in macros:
-    k = qt.QKeySequence(keys)
-    s = qt.QShortcut(k,mainWindow())
-    s.connect('activated()', f)
-    s.connect('activatedAmbiguously()', f)
-    print "SlicerRC - '%s' -> '%s'" % (keys, f.__name__)
+  windows = (slicer.util.mainWindow(), slicer.util.pythonShell())
+  for window in windows:
+    for keys,f in macros:
+      k = qt.QKeySequence(keys)
+      s = qt.QShortcut(k,window)
+      s.connect('activated()', f)
+      s.connect('activatedAmbiguously()', f)
+      print "SlicerRC - '%s' -> '%s'" % (keys, f.__name__)
 
 # Install macros
 if mainWindow(verbose=False): setupMacros()
