@@ -32,17 +32,33 @@ def multivolume():
 def endoscopy():
   print "SlicerRC - endoscopy setup..."
   import imp, sys, os
-  endoPath = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
-  if not sys.path.__contains__(endoPath):
-    sys.path.insert(0,endoPath)
+  scriptPath = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
+  if not sys.path.__contains__(scriptPath):
+    sys.path.insert(0,scriptPath)
 
   mod = "Endoscopy"
-  sourceFile = endoPath + "/Endoscopy.py"
+  sourceFile = scriptPath + "/Endoscopy.py"
   fp = open(sourceFile, "r")
   globals()[mod] = imp.load_module(mod, fp, sourceFile, ('.py', 'r', imp.PY_SOURCE))
   fp.close()
 
   globals()['e'] = e = globals()[mod].EndoscopyWidget()
+
+def labelStatistics():
+  print "SlicerRC - labelStatistics setup..."
+  import imp, sys, os
+  scriptPath = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
+  if not sys.path.__contains__(scriptPath):
+    sys.path.insert(0,scriptPath)
+
+  mod = "LabelStatistics"
+  sourceFile = scriptPath + "/LabelStatistics.py"
+  fp = open(sourceFile, "r")
+  globals()[mod] = imp.load_module(mod, fp, sourceFile, ('.py', 'r', imp.PY_SOURCE))
+  fp.close()
+
+  globals()['l'] = l = globals()[mod].LabelStatisticsWidget()
+
 
 def editor():
   print "SlicerRC - editor setup..."
@@ -178,6 +194,7 @@ def setupMacros():
   macros = (
     ("Shift+Ctrl+0", loadSlicerRCFile),
     ("Shift+Ctrl+1", multivolume),
+    ("Shift+Ctrl+2", labelStatistics),
     ("Shift+Ctrl+2", endoscopy),
     ("Shift+Ctrl+3", editor),
     ("Shift+Ctrl+4", fileScan),
