@@ -14,20 +14,20 @@ def load_default_volume():
     appLogic.PropagateVolumeSelection()
 
 
-def multivolume():
-  print "SlicerRC - multivolume setup..."
+def LabelStatistics():
+  print "SlicerRC - LabelStatistics setup..."
   import imp, sys, os
-  path = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
+  path = '%s/../../Slicer/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(path):
     sys.path.insert(0,path)
 
-  mod = "multivolume"
-  sourceFile = path + "/MultiVolume.py"
+  mod = "LabelStatistics"
+  sourceFile = path + "/LabelStatistics.py"
   fp = open(sourceFile, "r")
   globals()[mod] = imp.load_module(mod, fp, sourceFile, ('.py', 'r', imp.PY_SOURCE))
   fp.close()
 
-  globals()['sd'] = globals()[mod].MultiVolumeWidget()
+  globals()['ls'] = globals()[mod].LabelStatisticsWidget()
 
 def endoscopy():
   print "SlicerRC - endoscopy setup..."
@@ -48,14 +48,14 @@ def editor():
   print "SlicerRC - editor setup..."
   import imp, sys, os
   import slicer
-  tcl("set ::guipath %s/../../Slicer4/Base/GUI/Tcl" % slicer.app.slicerHome )
-  tcl("if { [lsearch $::auto_path $::guipath] == -1 } { set ::auto_path [list %s/../../Slicer4/Base/GUI/Tcl $::auto_path] } " % slicer.app.slicerHome)
+  tcl("set ::guipath %s/../../Slicer/Base/GUI/Tcl" % slicer.app.slicerHome )
+  tcl("if { [lsearch $::auto_path $::guipath] == -1 } { set ::auto_path [list %s/../../Slicer/Base/GUI/Tcl $::auto_path] } " % slicer.app.slicerHome)
   tcl("package forget SlicerBaseGUITcl")
   tcl("package require SlicerBaseGUITcl")
-  tcl("EffectSWidget::RemoveAll")
-  tcl("EffectSWidget::Add DrawEffect")
+  #tcl("EffectSWidget::RemoveAll")
+  #tcl("EffectSWidget::Add DrawEffect")
 
-  if not getNodes().has_key('2006-spgr'):
+  if 0 and not getNodes().has_key('2006-spgr'):
     slicer.mrmlScene.SetURL('/home/pieper/data/edit/edit-small.mrml')
     slicer.mrmlScene.Connect()
 
@@ -63,17 +63,20 @@ def editor():
     slicer.mrmlScene.SetURL('/home/pieper/data/edit/edit.mrml')
     slicer.mrmlScene.Connect()
 
-  editorLibPath = '%s/../../Slicer4/Modules/Scripted/EditorLib' % slicer.app.slicerHome
+  if not slicer.util.getNodes('MR-head*'):
+    slicer.util.loadVolume('/Users/pieper/data/MR-head.nrrd')
+
+  editorLibPath = '%s/../../Slicer/Modules/Scripted/EditorLib' % slicer.app.slicerHome
   if not sys.path.__contains__(editorLibPath):
     sys.path.insert(0, editorLibPath)
-  editorPath = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
+  editorPath = '%s/../../Slicer/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(editorPath):
     sys.path.insert(0,editorPath)
 
 
   modules = (
       "EditColor", "EditOptions", "EditBox", "ColorBox", "HelperBox",
-      "PaintEffect", 
+      "LabelEffect", "PaintEffect", "DrawEffect",
       )
   for mod in modules:
     sourceFile = editorLibPath + "/" + mod + ".py"
@@ -88,7 +91,22 @@ def editor():
   globals()[mod] = imp.load_module(mod, fp, sourceFile, ('.py', 'r', imp.PY_SOURCE))
   fp.close()
 
-  globals()['e'] = e = globals()[mod].EditorWidget()
+  # hide the current widget
+  
+  mainWindow = slicer.util.mainWindow()
+  mainWindow.moduleSelector().selectModule('Editor')
+
+  parent = findChildren(text='Create and Select*')[0].parent()
+  for child in parent.children():
+    try:
+      child.hide()
+    except AttributeError:
+      pass
+
+  globals()['e'] = e = globals()[mod].EditorWidget(parent)
+  e.setup()
+  e.helper.setMasterVolume(slicer.util.getNode('MR-head'))
+  e.toolsBox.reloadExtensions()
 
 def fileScan():
   print "SlicerRC - fileScan setup..."
@@ -109,10 +127,13 @@ def fileScan():
 def performance():
   print "SlicerRC - performance setup..."
   import os
-  execfile(slicer.app.slicerHome + "/../../Slicer4/Base/Testing/Performance.py")
-  load_default_volume()
+  execfile(slicer.app.slicerHome + "/../../Slicer/Modules/Scripted/Scripts/PerformanceTests.py")
+  globals()['p'] = p = globals()[mod].PerformanceTestsWidget()
 
-  reslicing(10)
+
+  #load_default_volume()
+
+  #reslicing(10)
   #timeProbe()
   #global slt
   #slt = sliceLogicTest()
@@ -122,7 +143,7 @@ def slicr_setup():
 
   load_default_volume()
   import imp, sys, os
-  p = '/home/pieper/Dropbox/webgl/slicr'
+  p = '/Users/pieper/Dropbox/webgl/slicr'
   if not sys.path.__contains__(p):
     sys.path.insert(0,p)
 
@@ -171,23 +192,29 @@ def setupMacros():
   """Set up hot keys for various development scenarios"""
   
   import qt
-  global load_default_volume, multivolume, endoscopy, editor, fileScan, performance, slicr_setup, DICOM
+  global load_default_volume, LabelStatistics, endoscopy, editor, fileScan, performance, slicr_setup, DICOM
   
   print "SlicerRC - Install custom keyboard shortcuts"
   
+  import sys
+  if sys.platform == 'darwin':
+    modifier = 'Shift+Meta'
+  else:
+    modifier = 'Shift+Ctrl'
+
   macros = (
-    ("Shift+Ctrl+0", loadSlicerRCFile),
-    ("Shift+Ctrl+1", multivolume),
-    ("Shift+Ctrl+2", endoscopy),
-    ("Shift+Ctrl+3", editor),
-    ("Shift+Ctrl+4", fileScan),
-    ("Shift+Ctrl+5", performance),
-    ("Shift+Ctrl+6", slicr_setup),
-    ("Shift+Ctrl+7", DICOM),
+    ("0", loadSlicerRCFile),
+    ("1", LabelStatistics),
+    ("2", endoscopy),
+    ("3", editor),
+    ("4", fileScan),
+    ("5", performance),
+    ("6", slicr_setup),
+    ("7", DICOM),
     )
       
   for keys,f in macros:
-    k = qt.QKeySequence(keys)
+    k = qt.QKeySequence( "%s+%s" % (modifier,keys) )
     s = qt.QShortcut(k,mainWindow())
     s.connect('activated()', f)
     s.connect('activatedAmbiguously()', f)
