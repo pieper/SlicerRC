@@ -218,7 +218,7 @@ def setupMacros():
   """Set up hot keys for various development scenarios"""
   
   import qt
-  global load_default_volume, multivolume, labelStatistics, editor, fileScan, performance, slicr_setup, DICOM
+  global load_default_volume, multivolume, endoscopy, labelStatistics, editor, fileScan, performance, slicr_setup, DICOM
   global grabPythonToClipboard, grabMainToClipboard, grabToClipboard
   
   print "SlicerRC - Install custom keyboard shortcuts"
