@@ -65,7 +65,7 @@ def editor():
   import imp, sys, os
   import slicer
   tcl("set ::guipath %s/../../Slicer/Base/GUI/Tcl" % slicer.app.slicerHome )
-  tcl("if { [lsearch $::auto_path $::guipath] == -1 } { set ::auto_path [list %s/../../Slicer/Base/GUI/Tcl $::auto_path] } " % slicer.app.slicerHome)
+  tcl("if { [lsearch $::auto_path $::guipath] == -1 } { set ::auto_path [list %s/../../Slicer4/Base/GUI/Tcl $::auto_path] } " % slicer.app.slicerHome)
   tcl("package forget SlicerBaseGUITcl")
   tcl("package require SlicerBaseGUITcl")
   #tcl("EffectSWidget::RemoveAll")
