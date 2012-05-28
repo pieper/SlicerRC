@@ -79,8 +79,11 @@ def editor():
     slicer.mrmlScene.SetURL('/home/pieper/data/edit/edit.mrml')
     slicer.mrmlScene.Connect()
 
-  if not slicer.util.getNodes('MR-head*'):
+  if 0 and not slicer.util.getNodes('MR-head*'):
     slicer.util.loadVolume('/Users/pieper/data/MR-head.nrrd')
+
+  if not slicer.util.getNodes('kidney*'):
+    slicer.util.loadVolume('/Users/pieper/Dropbox/data/kidney.nrrd')
 
   editorLibPath = '%s/../../Slicer/Modules/Scripted/EditorLib' % slicer.app.slicerHome
   if not sys.path.__contains__(editorLibPath):
