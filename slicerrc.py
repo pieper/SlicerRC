@@ -32,7 +32,7 @@ def LabelStatistics():
 def endoscopy():
   print "SlicerRC - endoscopy setup..."
   import imp, sys, os
-  scriptPath = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
+  scriptPath = '%s/../../Slicer/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(scriptPath):
     sys.path.insert(0,scriptPath)
 
@@ -47,7 +47,7 @@ def endoscopy():
 def labelStatistics():
   print "SlicerRC - labelStatistics setup..."
   import imp, sys, os
-  scriptPath = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
+  scriptPath = '%s/../../Slicer/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(scriptPath):
     sys.path.insert(0,scriptPath)
 
@@ -125,12 +125,12 @@ def editor():
   globals()['e'] = e = globals()[mod].EditorWidget(parent)
   e.setup()
   e.helper.setMasterVolume(slicer.util.getNode('MR-head'))
-  e.toolsBox.reloadExtensions()
+  #e.toolsBox.reloadExtensions()
 
 def fileScan():
   print "SlicerRC - fileScan setup..."
   import imp, sys, os
-  p = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
+  p = '%s/../../Slicer/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(p):
     sys.path.insert(0,p)
 
@@ -176,16 +176,16 @@ def slicr_setup():
   globals()['s'] = globals()[mod].slicr_command_processor()
   globals()['s'].start()
 
-def DICOM():
+def DICOM_setup():
   print "SlicerRC - DICOM setup..."
   import imp, sys, os
-  path = '%s/../../Slicer4/Modules/Scripted/Scripts' % slicer.app.slicerHome
+  path = '%s/../../Slicer/Modules/Scripted/Scripts' % slicer.app.slicerHome
   if not sys.path.__contains__(path):
     sys.path.insert(0,path)
 
   if False:
     # TODO: reload dicomlib
-    dicomLibPath = '%s/../../Slicer4/Modules/Scripted/DICOMLib' % slicer.app.slicerHome
+    dicomLibPath = '%s/../../Slicer/Modules/Scripted/DICOMLib' % slicer.app.slicerHome
     if not sys.path.__contains__(dicomLibPath):
       sys.path.insert(0, dicomLibPath)
 
@@ -221,7 +221,7 @@ def setupMacros():
   """Set up hot keys for various development scenarios"""
   
   import qt
-  global load_default_volume, multivolume, endoscopy, labelStatistics, editor, fileScan, performance, slicr_setup, DICOM
+  global load_default_volume, multivolume, endoscopy, labelStatistics, editor, fileScan, performance, slicr_setup, DICOM_setup
   global grabPythonToClipboard, grabMainToClipboard, grabToClipboard
   
   print "SlicerRC - Install custom keyboard shortcuts"
@@ -240,7 +240,7 @@ def setupMacros():
     ("4", fileScan),
     ("5", performance),
     ("6", slicr_setup),
-    ("7", DICOM),
+    ("7", DICOM_setup),
     ("p", grabPythonToClipboard),
     ("c", grabMainToClipboard),
     )
