@@ -121,11 +121,18 @@ def editor():
       child.hide()
     except AttributeError:
       pass
+  item = parent.layout().itemAt(0)
+  while item:
+    parent.layout().removeItem(item)
+    item = parent.layout().itemAt(0)
 
   globals()['e'] = e = globals()[mod].EditorWidget(parent)
   e.setup()
   e.helper.setMasterVolume(slicer.util.getNode('MR-head'))
-  #e.toolsBox.reloadExtensions()
+  if hasattr(e.toolsBox,'reloadExtensions'):
+    e.toolsBox.reloadExtensions()
+  else:
+    print("This version of the editor cannot reload extensions")
 
 def fileScan():
   print "SlicerRC - fileScan setup..."
